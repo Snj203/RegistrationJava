@@ -19,16 +19,16 @@ public class Main {
         try {
              CertificateFetcher.getCertificate(host, port, "OutCert.crt");
              KeyStore keyStore = LoadCertificate.loadCertificate("OutCert.crt");
-            SSLContextSetup.createSSLContext();
+             SSLContextSetup.createSSLContext();
 
-            System.out.println("Выполняется GET-запрос...");
+             System.out.println("Выполняется GET-запрос...");
 //            customSocket.sendGetRequest(getRoute, keyStore);
 //            System.out.println("GET-запрос успешно выполнен, ответ сохранён в файл.");
 
             System.out.println("Извлечение sesskey из файла...");
             String sesskey = customSocket.getSesskeyFromHTML("index.html");
 
-            if (!"not found sesskey".equals(sesskey)) {
+            if (!sesskey.equals("not found sesskey")) {
                 System.out.println("Sesskey найден: " + sesskey);
 
                 User user = new User(

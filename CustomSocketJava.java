@@ -18,10 +18,10 @@ public class CustomSocketJava {
         this.port = port;
     }
 
-    public String sendGetRequest(String route, SSLContext sslContext) throws NoSuchAlgorithmException, KeyManagementException, IOException, InterruptedException, KeyStoreException {
+    public String sendGetRequest(String route, SSLContext sslContext) throws NoSuchAlgorithmException,InterruptedException, KeyManagementException, KeyStoreException {
 //        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 //        tmf.init(keyStore);
-//
+
 //        SSLContext sslContext = SSLContext.getInstance("TLS");
 //        sslContext.init(null, tmf.getTrustManagers(), null);
 
@@ -38,10 +38,13 @@ public class CustomSocketJava {
             outputStream.flush();
 
             return readResponse(sslSocket);
+        } catch (IOException ioe){
+            System.out.println("IOEException at sendGetRequest " + ioe);
         }
+        return null;
     }
 
-    public String sendPostRequest(String route, String urlencode, SSLContext sslContext) throws NoSuchAlgorithmException, KeyManagementException, IOException, InterruptedException, KeyStoreException {
+    public String sendPostRequest(String route, String urlencode, SSLContext sslContext) throws NoSuchAlgorithmException,InterruptedException, KeyManagementException, KeyStoreException {
 //        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 //        tmf.init(keyStore);
 //
@@ -66,16 +69,21 @@ public class CustomSocketJava {
             outputStream.flush();
 
             return readResponse(sslSocket);
+        } catch (IOException ioe){
+            System.out.println("IOEException at sendGetRequest " + ioe);
         }
+        return null;
     }
 
-    private String readResponse(SSLSocket sslSocket) throws IOException, InterruptedException {
+    private String readResponse(SSLSocket sslSocket) {
         StringBuilder response = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 response.append(line).append(System.lineSeparator());
             }
+        } catch (IOException ioe){
+            System.out.println("IOEException at sendGetRequest " + ioe);
         }
         saveToFile(response.toString(), "index.html");
 
@@ -91,10 +99,11 @@ public class CustomSocketJava {
         }
     }
 
-    public String extractMoodleSession(String response) throws IOException {
+    public String extractMoodleSession(String response){
 
         String sessionId = "not found";
         Pattern pattern = Pattern.compile("Set-Cookie: MoodleSession=([^;]+);");
+
         String match = readFileAsString(response);
         Matcher matcher = pattern.matcher(match);
 
@@ -121,7 +130,7 @@ public class CustomSocketJava {
         return matcher.find() ? matcher.group(1) : "not found sesskey";
     }
 
-    public static String readFileAsString(String filePath) throws IOException {
+    public static String readFileAsString(String filePath)  {
         StringBuilder content = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -129,6 +138,8 @@ public class CustomSocketJava {
             while ((line = reader.readLine()) != null) {
                 content.append(line).append(System.lineSeparator());
             }
+        } catch (IOException ioe){
+            System.out.println("IOException at CustonSocket/readFileAsString: " + ioe);
         }
         return content.toString().trim();
     }
